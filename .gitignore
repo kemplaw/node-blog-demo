@@ -1,0 +1,12 @@
+# package
+/node_modules
+package-lock.json
+
+# build
+/build
+
+# ide
+.vscode
+
+# logs
+/logs

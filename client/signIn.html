@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>博客 - 注册</title>
+  </head>
+  <body>
+    <div>
+      <input class="username" type="text" placeholder="username" />
+    </div>
+    <div>
+      <input class="realname" type="text" placeholder="realname" />
+    </div>
+    <div>
+      <input class="password" type="text" placeholder="password" />
+    </div>
+
+    <div>
+      <button type="button" onclick="handleSignIn()">注册</button>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      function getPostData() {
+        const username = $('.username').val()
+        const realname = $('.realname').val()
+        const password = $('.password').val()
+
+        if (!username || !password) {
+          alert('请输入正确的用户名或密码')
+
+          return
+        }
+
+        return {
+          username,
+          realname,
+          password
+        }
+      }
+
+      function handleSignIn() {
+        const data = getPostData()
+
+        if (!data) return
+
+        $.ajax({
+          url: 'http://localhost:8080/api/user/signIn',
+          data: JSON.stringify(data),
+          method: 'post',
+          headers: {
+            'content-type': 'application/json'
+          }
+        }).then(({ errno, message }) => {
+          alert(message)
+
+          if (errno !== -1) {
+            window.location.href = './login.html'
+          }
+        })
+      }
+    </script>
+  </body>
+</html>

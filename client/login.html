@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>博客 - 登录</title>
+  </head>
+  <body>
+    <header>
+      <h3>开始使用 | <a href="./signIn.html">没有账号？前往注册</a></h3>
+    </header>
+    <main>
+      <form>
+        <div>
+          <label for="">用户名：</label>
+          <input class="username" type="text" />
+        </div>
+        <div>
+          <label for="">密码：</label>
+          <input class="password" type="text" />
+        </div>
+
+        <div>
+          <button type="button" onclick="handleLogin()">登录</button>
+        </div>
+      </form>
+    </main>
+    <footer></footer>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      function getPostData() {
+        const username = $('.username').val()
+        const password = $('.password').val()
+
+        if (!username || !password) {
+          alert('请输入正确的用户名或密码')
+
+          return
+        }
+
+        return {
+          username,
+          password
+        }
+      }
+
+      function handleLogin() {
+        const postData = getPostData()
+
+        if (!postData) return
+
+        $.ajax({
+          method: 'post',
+          url: 'http://localhost:8080/api/user/login',
+          data: JSON.stringify(postData),
+          headers: {
+            'content-type': 'application/json'
+          }
+        }).then(({ errno, message }) => {
+          alert(message)
+
+          if (errno !== -1) {
+            window.location.href = './list.html'
+          }
+        })
+      }
+
+      window.onload = function onLoad() {}
+    </script>
+  </body>
+</html>

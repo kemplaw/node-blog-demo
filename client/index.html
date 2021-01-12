@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>博客 - 首页</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+      }
+
+      html,
+      body,
+      .app-wrapper {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .app-wrapper {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .app-wrapper main {
+        flex: 1;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-wrapper">
+      <header>
+        <h3>博客首页</h3>
+      </header>
+      <main>
+        <p>
+          <span>欢迎来到我的博客</span>
+          <a href="./login.html">登录</a>
+          <button class="logout" type="button" onclick="handleLogout()">退出登录</button>
+        </p>
+        <ul>
+          <li>
+            <a href="./list.html">查看所有博客</a>
+          </li>
+        </ul>
+      </main>
+      <footer>kemp's blog</footer>
+    </div>
+  </body>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    function handleLogout(params) {
+      $.ajax({
+        method: 'post',
+        url: '/api/user/logout',
+        headers: {
+          'content-type': 'application/json'
+        }
+      }).then(({ errno, message }) => {
+        alert(message)
+      })
+    }
+  </script>
+</html>

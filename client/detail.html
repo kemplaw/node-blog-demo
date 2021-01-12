@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>博客详情 - 标题</title>
+  </head>
+  <body>
+    <h3 class="title-wrapper">标题：</h3>
+    <p class="content-wrapper">暂无内容</p>
+  </body>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    function getQueryString() {
+      return location.search
+    }
+
+    function renderDetailDataToPage({ title, content }) {
+      $('.title-wrapper').append(title)
+      $('.content-wrapper').html(content)
+    }
+
+    function getBlogDetail() {
+      $.ajax({
+        url: `/api/blog/detail${getQueryString()}`,
+        method: 'get',
+        headers: {
+          'content-type': 'application/json'
+        }
+      }).then(({ data, errno, message }) => {
+        if (errno !== -1) {
+          renderDetailDataToPage(data)
+        }
+      })
+    }
+
+    window.onload = function onLoad() {
+      getBlogDetail()
+    }
+  </script>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "node-blog-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bin/www.js",
+  "scripts": {
+    "dev:client": "http-server ./client -p 8001",
+    "dev": "cross-env NODE_ENV=development nodemon --inspect=9229 ./bin/www.js",
+    "prd": "cross-env NODE_ENV=production pm2 start pm2.config.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "eslint": "^7.17.0",
+    "http-server": "^0.12.3",
+    "nodemon": "^2.0.7",
+    "pm2": "^4.5.1"
+  },
+  "dependencies": {
+    "mongodb": "^3.6.3",
+    "mongoose": "^5.11.11",
+    "mysql": "^2.18.1",
+    "redis": "^3.0.2",
+    "xss": "^1.0.8"
+  }
+}

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>博客 - 列表</title>
+    <style>
+      .main-wrapper {
+        display: flex;
+      }
+
+      .main-wrapper .blog-list-wrapper {
+        margin-right: 100px;
+      }
+
+      .modal-wrapper {
+        position: fixed;
+        top: 300px;
+        left: 50%;
+        padding: 10px 25px;
+        margin-left: -25%;
+        width: 400px;
+        background-color: #ffffff;
+        z-index: 999;
+        border-radius: 4px;
+        box-shadow: 1px 0 10px 1px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h3>博客列表</h3>
+    </header>
+
+    <main class="main-wrapper">
+      <ul class="blog-list-wrapper">
+        <span>暂无数据</span>
+      </ul>
+
+      <div class="blog-editor-wrapper">
+        <h4>添加博客</h4>
+        <p>
+          <input class="blog-title-wrapper" type="text" placeholder="标题" />
+        </p>
+        <p>
+          <textarea class="blog-content-wrapper" cols="30" rows="10" placeholder="内容"></textarea>
+        </p>
+        <div>
+          <button type="button" onclick="handleAddBlog()">添加</button>
+        </div>
+      </div>
+    </main>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      function modelBuilder(id) {
+        return `
+        <div class="modal-wrapper">
+        <div class="blog-editor-wrapper">
+          <h4>修改博客</h4>
+          <p>
+            <input class="blog-title-wrapper" type="text" placeholder="标题" />
+          </p>
+          <p>
+            <textarea
+              class="blog-content-wrapper"
+              cols="30"
+              rows="10"
+              placeholder="内容"
+            ></textarea>
+          </p>
+          <div>
+            <button type="button" onclick="handleEdit(${id})">更改</button>
+          </div>
+        </div>
+      </div>
+        `
+      }
+
+      function blogItemBuilder({ id, title, author, createtime, updatedAt, _id }) {
+        const originTime = updatedAt || createtime
+        const convertedTime = /\d+/.test(originTime) ? new Date(originTime) : originTime
+
+        return `
+          <li>
+            <p>
+              <a href="./detail.html?id=${id || _id}">标题：${title}</a>
+            </p>
+            <p>
+              <span>作者：${author} | </span>
+              <span>时间：${convertedTime}</span>
+            </p>
+            <p>
+              <button type="button" onclick="handleDelete(${id})">删除</button>
+              <button type="button" onclick="handleShowEditModal(${id})">编辑</button>
+            </p>
+          </li>
+        `
+      }
+
+      function handleShowEditModal(id) {
+        const modalElem = document.querySelector('.modal-wrapper')
+
+        if (modalElem) {
+          modalElem.style.display = 'block'
+
+          return
+        }
+
+        const elem = modelBuilder(id)
+        document.body.innerHTML += elem
+      }
+
+      function handleDelete(id) {
+        $.ajax({
+          url: '/api/blog/del',
+          method: 'post',
+          headers: {
+            'content-type': 'application/json'
+          },
+          data: JSON.stringify({ id })
+        }).then(({ errno, message }) => {
+          alert(message)
+
+          if (errno !== -1) {
+            getBlogList()
+          }
+        })
+      }
+
+      function handleEdit(id) {
+        const title = $('.modal-wrapper .blog-title-wrapper').val()
+        const content = $('.modal-wrapper .blog-content-wrapper').val()
+
+        $.ajax({
+          url: '/api/blog/update',
+          method: 'post',
+          headers: {
+            'content-type': 'application/json'
+          },
+          data: JSON.stringify({
+            id,
+            title,
+            content
+          })
+        }).then(({ errno, message }) => {
+          alert(message)
+
+          if (errno !== -1) {
+            $('.modal-wrapper').hide()
+            getBlogList()
+          }
+        })
+      }
+
+      function appendBlogItemToList(blogListData) {
+        const blogListWrapper = $('.blog-list-wrapper')
+
+        blogListWrapper.empty()
+
+        if (!blogListData || !blogListData.length) {
+          return blogListWrapper.append('<span>暂无数据</span>')
+        }
+
+        blogListData.forEach(blog => {
+          const blogItem = blogItemBuilder(blog)
+          blogListWrapper.append(blogItem)
+        })
+      }
+
+      function getNewBlogData() {
+        const title = $('.blog-title-wrapper').val()
+        const content = $('.blog-content-wrapper').val()
+
+        if (!title || !content) {
+          alert('标题或者内容必填')
+
+          return
+        }
+
+        return {
+          title,
+          content
+        }
+      }
+
+      function getBlogList() {
+        $.get({ url: 'http://localhost:8080/api/blog/list' }).then(res => {
+          appendBlogItemToList(res.data)
+        })
+      }
+
+      function handleAddBlog() {
+        const data = getNewBlogData()
+
+        if (!data) return
+
+        $.ajax({
+          method: 'post',
+          url: '/api/blog/new',
+          data: JSON.stringify(data),
+          headers: { 'content-type': 'application/json' }
+        }).then(({ errno, message }) => {
+          alert(message)
+
+          if (errno !== -1) {
+            getBlogList()
+          }
+        })
+      }
+
+      window.onload = function onLoad() {
+        getBlogList()
+      }
+    </script>
+  </body>
+</html>
